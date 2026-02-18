@@ -1,14 +1,20 @@
 package main
 
 import (
-	"stmnplibrary/log"
+	"context"
+	"os/signal"
 	"stmnplibrary/cmd/wire"
+	"stmnplibrary/log"
+	"syscall"
+	"time"
 
 	// "github.com/gin-gonic/gin"
+	"net/http"
+
 	"github.com/joho/godotenv"
 	"go.uber.org/zap"
-	
-	// "context"
+
+	"os"
 	// "fmt"
 )
 
@@ -30,9 +36,32 @@ func main() {
 		zapLog.Error("failed open .env file")
 		return
 	}	
-	router, _, err := wiring.InitializeApp()
+	router, stop, err := wiring.InitializeApp()
 	if err != nil {
-		panic(err)
+		zapLog.Sugar().Fatalf("Error while initialize app: %v", err)
 	}
-	router.Run()
+
+	srv := &http.Server{
+		Addr: os.Getenv("SERVER_PORT"),
+		Handler: router,
+	}
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed  {
+			zapLog.Sugar().Fatalf("Error while start server: %v", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<- quit
+
+	ctx, cancel := context.WithTimeout(context.TODO(), 1*time.Minute)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		zapLog.Sugar().Fatalf("Error while shutdown server: %v", err)
+	}
+
+	stop()
 }
