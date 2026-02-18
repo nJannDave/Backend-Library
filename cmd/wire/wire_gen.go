@@ -25,9 +25,9 @@ import (
 
 func InitializeApp() (*gin.Engine, func(), error) {
 	string2 := config.ProviderConnStr()
-	db := config.Init(string2)
+	db, cleanup := config.Init(string2)
 	context := config2.ProviderCTX()
-	client := config2.ConnectRedis(context)
+	client, cleanup2 := config2.ConnectRedis(context)
 	adminRepository := repository.FnAdminRepository(db, client)
 	adminService := service.FnAdminService(adminRepository)
 	adminHandler := handler.FnAdminHandler(adminService)
@@ -38,5 +38,8 @@ func InitializeApp() (*gin.Engine, func(), error) {
 	userService := service3.FnUserService(userRepository)
 	userHandler := handler3.FnUserHandler(userService)
 	engine := WireHandler(adminHandler, authHandler, userHandler, userService)
-	return engine, func() {}, nil
+	return engine, func() {
+		cleanup2()
+		cleanup()
+	}, nil
 }
