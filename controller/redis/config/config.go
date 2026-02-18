@@ -13,7 +13,7 @@ func ProviderCTX() context.Context {
 	return context.TODO()
 }
 
-func ConnectRedis(ctx context.Context) *redis.Client {
+func ConnectRedis(ctx context.Context) (*redis.Client, func()) {
 	rds := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_ADDR"),
 		Password: os.Getenv("REDIS_PASSWORD"),
@@ -21,7 +21,11 @@ func ConnectRedis(ctx context.Context) *redis.Client {
 	})
 	if err := rds.Ping(ctx).Err(); err != nil {
 		log.LogConfig("failed connect to redis", "connect_redis", err)
-		return nil
+		panic(err)
 	}
-	return rds
+	return rds, func () {
+		if err := rds.Close(); err != nil {
+			panic(err)
+		}
+	}
 }
