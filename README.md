@@ -17,8 +17,9 @@
 ### 🔒 Safety
 * 1️⃣ Use `Idempotency Key` for ***POST*** API ( AddCategory(admin) & AddBook(admin) )
 * 2️⃣ Use `Pessimistic locking` to solve ***Race Condition*** problem ( Loan(students) )
-* 1️⃣ Use `Idempotency Key` for ***POST*** API ( AddCategory(admin) & AddBook(admin) )
-* 2️⃣ Use `Pessimistic Locking` to solve ***Race Condition*** problem ( Loan(students) )
+* 3️⃣ Use `Idempotency Key` for ***POST*** API ( AddCategory(admin) & AddBook(admin) )
+* 4️⃣ Use `Pessimistic Locking` to solve ***Race Condition*** problem ( Loan(students) )
+* 5️⃣ Use `Graceful Shutdown`
 
 ---
 
