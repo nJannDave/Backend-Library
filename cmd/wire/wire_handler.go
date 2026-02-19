@@ -15,6 +15,7 @@ func WireHandler(handlerA *ha.AdminHandler, handlerB *hb.AuthHandler, handler *h
 
 	middle := middleware.FnNewMiddle(s)
 
+	router.Use(middleware.Recovery())
 	router.Use(middleware.GenerateUUID())
 	router.Use(middle.RateLimiter())
 
