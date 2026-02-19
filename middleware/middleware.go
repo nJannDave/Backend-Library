@@ -1,14 +1,17 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"stmnplibrary/constanta"
 	"stmnplibrary/domain/interface/service"
 	"stmnplibrary/dto"
+	"stmnplibrary/log"
 	token "stmnplibrary/security/jwt"
 
 	"context"
 	"strings"
+	"runtime/debug"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -21,6 +24,25 @@ type middle struct {
 func FnNewMiddle(service service.UserService) *middle {
 	return &middle{
 		service: service,
+	}
+}
+
+func Recovery() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		defer func() {
+			if err := recover(); err != nil {
+				var stack = debug.Stack()
+				var errStr = fmt.Sprintf("panic: err: %v stack: %s", err, stack)
+				var msg = "an error occured"
+				log.LogHSR(c.Request.Context(), msg, "backend - library", c.Request.URL.Path, c.Request.Method, errStr)
+				c.AbortWithStatusJSON(http.StatusInternalServerError, dto.Response {
+					Status: "failed / false",
+					Message: msg,
+				})
+				return
+			}
+		}()
+		c.Next()
 	}
 }
 
