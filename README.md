@@ -20,6 +20,7 @@
 * 3️⃣ Use `Idempotency Key` for ***POST*** API ( AddCategory(admin) & AddBook(admin) )
 * 4️⃣ Use `Pessimistic Locking` to solve ***Race Condition*** problem ( Loan(students) )
 * 5️⃣ Use `Graceful Shutdown`
+* 6️⃣ Use `Recovery Middleware` to prevent crashes during panic
 
 ---
 
