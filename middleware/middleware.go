@@ -31,9 +31,11 @@ func Recovery() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
-				var stack = debug.Stack()
-				var errStr = fmt.Sprintf("panic: err: %v stack: %s", err, stack)
-				var msg = "an error occured"
+				var (
+					stack = debug.Stack()
+					errStr = fmt.Sprintf("panic: err: %v stack: %s", err, stack)
+					msg = "an error occured"
+				)
 				log.LogHSR(c.Request.Context(), msg, "backend - library", c.Request.URL.Path, c.Request.Method, errStr)
 				c.AbortWithStatusJSON(http.StatusInternalServerError, dto.Response {
 					Status: "failed / false",
