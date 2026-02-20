@@ -1,0 +1,570 @@
+definitions:
+  dto.Binding:
+    properties:
+      field:
+        type: string
+      reason:
+        type: string
+    type: object
+  dto.BookData:
+    properties:
+      author:
+        type: string
+      available_stock:
+        type: integer
+      book_name:
+        type: string
+      description:
+        maxLength: 300
+        minLength: 50
+        type: string
+      id_category:
+        items:
+          type: integer
+        type: array
+      isbn:
+        type: string
+      publisher:
+        type: string
+      stock:
+        type: integer
+    required:
+    - author
+    - available_stock
+    - book_name
+    - description
+    - id_category
+    - isbn
+    - publisher
+    - stock
+    type: object
+  dto.Category:
+    properties:
+      category_name:
+        type: string
+    required:
+    - category_name
+    type: object
+  dto.Confirm:
+    properties:
+      isbn:
+        type: string
+      student:
+        type: string
+    required:
+    - isbn
+    - student
+    type: object
+  dto.Errors:
+    properties:
+      binding:
+        items:
+          $ref: '#/definitions/dto.Binding'
+        type: array
+      error:
+        type: string
+      service:
+        items:
+          $ref: '#/definitions/dto.Service'
+        type: array
+    type: object
+  dto.Loan:
+    properties:
+      book_id:
+        type: integer
+      returned_at:
+        type: string
+    required:
+    - book_id
+    - returned_at
+    type: object
+  dto.Login:
+    properties:
+      nis:
+        type: integer
+      password:
+        type: string
+    required:
+    - nis
+    - password
+    type: object
+  dto.Response:
+    properties:
+      data: {}
+      errors:
+        $ref: '#/definitions/dto.Errors'
+      message:
+        type: string
+      status:
+        type: string
+    type: object
+  dto.Service:
+    properties:
+      reason:
+        type: string
+    type: object
+  dto.Students:
+    properties:
+      batch:
+        type: integer
+      class:
+        type: string
+      email:
+        maxLength: 20
+        minLength: 10
+        type: string
+      major:
+        enum:
+        - RPL
+        - SIJA
+        - PSPT
+        - TPTU
+        - TEI
+        - MEKA
+        - TOI
+        - TEK
+        - IOP
+        type: string
+      name:
+        maxLength: 30
+        minLength: 5
+        type: string
+      nis:
+        type: integer
+      password:
+        type: string
+      phone_number:
+        maxLength: 15
+        type: string
+      sub_class:
+        enum:
+        - A
+        - B
+        - C
+        type: string
+    required:
+    - batch
+    - email
+    - major
+    - name
+    - nis
+    - password
+    - phone_number
+    - sub_class
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API for the library, there is borrowing books, viewing and confirmation
+    of borrowing
+  title: Library API
+  version: "1.0"
+paths:
+  /admin/add/book:
+    post:
+      consumes:
+      - application/json
+      description: Add new book to database
+      parameters:
+      - description: Book data
+        in: body
+        name: book
+        required: true
+        schema:
+          $ref: '#/definitions/dto.BookData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully add new book
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Incorrect client input
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Add book
+      tags:
+      - Admin
+  /admin/add/category:
+    post:
+      consumes:
+      - application/json
+      description: Add new category to database
+      parameters:
+      - description: Category name
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Category'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully add new category
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Incorrect client input
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Add category
+      tags:
+      - Admin
+  /admin/loan:
+    get:
+      description: Get all loan data, whether it has been returned or not
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully get loan data
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Incorrect client input
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Get loan data
+      tags:
+      - Admin
+  /admin/loan/confirm:
+    post:
+      consumes:
+      - application/json
+      description: Confirm book loan
+      parameters:
+      - description: Student and book data
+        in: body
+        name: confirm
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Confirm'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully confirm book loan
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Incorrect client input
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Confirm
+      tags:
+      - Admin
+  /admin/loan/done:
+    get:
+      description: Get all loan data that has been returned
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully get loan data
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Incorrect client input
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Get loan data
+      tags:
+      - Admin
+  /admin/loan/dont:
+    get:
+      description: Get all loan data that has not been returned
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully get loan data
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Incorrect client input
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Get loan data
+      tags:
+      - Admin
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login with NIK & Password
+      parameters:
+      - description: Data for login
+        in: body
+        name: loginData
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Login'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully Login
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Incorrect client input
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Login for access library API
+      tags:
+      - Authentication
+  /refresh:
+    get:
+      description: Get the refresh token in the cookie and if it is valid, generate
+        a new access and refresh token.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully refreshed token
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "401":
+          description: Not logged in yet
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Refresh session user
+      tags:
+      - Authentication
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Create account
+      parameters:
+      - description: Student data
+        in: body
+        name: register
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Students'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully register
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Incorrect client input
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Register
+      tags:
+      - student
+  /student/book/loan:
+    post:
+      consumes:
+      - application/json
+      description: Borrow books from the database
+      parameters:
+      - description: Loan data, with book id and returned time as a value
+        in: body
+        name: loan
+        required: true
+        schema:
+          $ref: '#/definitions/dto.Loan'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully loan a book
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Incorrect client input
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Loan book
+      tags:
+      - student
+  /student/books:
+    get:
+      description: Get all books from db
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully get books
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Incorrect client input
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Get books
+      tags:
+      - student
+  /student/books/author:
+    get:
+      description: Get books with author as filter
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - description: Author
+        in: query
+        name: author
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully get books by author
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Incorrect client input
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Get books
+      tags:
+      - student
+  /student/books/category:
+    get:
+      description: Get books with category as filter
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        required: true
+        type: integer
+      - collectionFormat: multi
+        description: List category
+        in: query
+        items:
+          type: string
+        name: category
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully get books by category
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Incorrect client input
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Get books
+      tags:
+      - student
+  /student/logout:
+    get:
+      description: Log out of account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully confirm logout
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "400":
+          description: Incorrect client input
+          schema:
+            $ref: '#/definitions/dto.Response'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/dto.Response'
+      summary: Logout
+      tags:
+      - student
+securityDefinitions:
+  CookieAccess:
+    in: cookie
+    name: tokeniniAccess_0288193761dk
+    type: apiKey
+  CookieRefresh:
+    in: cookie
+    name: tokeniniRefresh_0288193761k
+    type: apiKey
+swagger: "2.0"
