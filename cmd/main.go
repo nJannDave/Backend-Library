@@ -29,6 +29,16 @@ func initLog() *zap.Logger {
 	return zapLog
 }
 
+// @title Library API
+// @version 1.0
+// @description API for the library, there is borrowing books, viewing and confirmation of borrowing
+// @host localhost:8080
+// @securityDefinitions.apikey CookieRefresh
+// @in cookie
+// @name tokeniniRefresh_0288193761k
+// @securityDefinitions.apikey CookieAccess
+// @in cookie
+// @name tokeniniAccess_0288193761dk
 func main() {
 	zapLog := initLog()
 	defer zapLog.Sync()
