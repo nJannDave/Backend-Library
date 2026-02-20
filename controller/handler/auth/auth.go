@@ -37,8 +37,11 @@ func delCookieToken(c *gin.Context, key string) {
 	})
 }
 
-func setCookieToken(c *gin.Context, key string, token string) {
-	const maxAge = 900
+func setCookieToken(c *gin.Context, key string, token string, tokenType string) {
+	var maxAge = 180
+	if tokenType == "refresh" {
+		maxAge = 604800
+	}
 	c.SetSameSite(http.SameSiteStrictMode)
 	http.SetCookie(c.Writer, &http.Cookie{
 		Name:     key,
@@ -52,6 +55,15 @@ func setCookieToken(c *gin.Context, key string, token string) {
 	})
 }
 
+// Refresh godoc
+// @Summary Refresh session user
+// @Description Get the refresh token in the cookie and if it is valid, generate a new access and refresh token.
+// @Tags Authentication
+// @Produce json
+// @Success 200 {object} dto.Response "Successfully refreshed token"
+// @Failure 401 {object} dto.Response "Not logged in yet"
+// @Failure 500 {object} dto.Response "Internal server error"
+// @Router /refresh [get]
 func (ah *AuthHandler) Refresh(c *gin.Context) {
 	const resMsg = "failed refresh token"
 	var ctx = c.Request.Context()
@@ -72,14 +84,25 @@ func (ah *AuthHandler) Refresh(c *gin.Context) {
 		c.JSON(status, errMsg)
 		return
 	}
-	setCookieToken(c, string(constanta.TokenA), token.AccessToken)
-	setCookieToken(c, string(constanta.TokenR), token.RefreshToken)
+	setCookieToken(c, string(constanta.TokenA), token.AccessToken, "access")
+	setCookieToken(c, string(constanta.TokenR), token.RefreshToken, "refresh")
 	c.JSON(http.StatusCreated, &dto.Response{
 		Status:  "true / success",
 		Message: "success refresh",
 	})
 }
 
+// Login godoc
+// @Summary Login for access library API
+// @Description Login with NIK & Password
+// @Tags Authentication
+// @Accept json
+// @Produce json
+// @Param loginData body dto.Login true "Data for login"
+// @Success 200 {object} dto.Response "Successfully Login"
+// @Failure 400 {object} dto.Response "Incorrect client input"
+// @Failure 500 {object} dto.Response "Internal server error"
+// @Router /login [post]
 func (ah *AuthHandler) Login(c *gin.Context) {
 	const resMsg = "failed login"
 	var data dto.Login
@@ -98,8 +121,8 @@ func (ah *AuthHandler) Login(c *gin.Context) {
 		c.JSON(status, errMsg)
 		return
 	}
-	setCookieToken(c, string(constanta.TokenA), token.AccessToken)
-	setCookieToken(c, string(constanta.TokenR), token.RefreshToken)
+	setCookieToken(c, string(constanta.TokenA), token.AccessToken, "access")
+	setCookieToken(c, string(constanta.TokenR), token.RefreshToken, "refresh")
 	c.JSON(http.StatusOK, &dto.Response{
 		Status:  "true / success",
 		Message: "success login",

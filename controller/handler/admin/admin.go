@@ -31,6 +31,16 @@ func getPage(c *gin.Context) (int, error) {
 	return page, err
 }
 
+// GetLoanData godoc
+// @Summary Get loan data
+// @Description Get all loan data, whether it has been returned or not
+// @Produce json
+// @Param page query int true "Page"
+// @Tags Admin
+// @Success 200 {object} dto.Response "Successfully get loan data"
+// @Failure 400 {object} dto.Response "Incorrect client input"
+// @Failure 500 {object} dto.Response "Internal server error"
+// @Router /admin/loan [get]
 func (ah *AdminHandler) GetLoanData(c *gin.Context) {
 	var ctx = c.Request.Context()
 	page, err := getPage(c)
@@ -57,6 +67,16 @@ func (ah *AdminHandler) GetLoanData(c *gin.Context) {
 	})
 }
 
+// GetLDDone godoc
+// @Summary Get loan data
+// @Description Get all loan data that has been returned
+// @Produce json
+// @Param page query int true "Page"
+// @Tags Admin
+// @Success 200 {object} dto.Response "Successfully get loan data"
+// @Failure 400 {object} dto.Response "Incorrect client input"
+// @Failure 500 {object} dto.Response "Internal server error"
+// @Router /admin/loan/done [get]
 func (ah *AdminHandler) GetLDDone(c *gin.Context) {
 	var ctx = c.Request.Context()
 	page, err := getPage(c)
@@ -83,6 +103,16 @@ func (ah *AdminHandler) GetLDDone(c *gin.Context) {
 	})
 }
 
+// GetLDDont godoc
+// @Summary Get loan data
+// @Description Get all loan data that has not been returned
+// @Produce json
+// @Param page query int true "Page"
+// @Tags Admin
+// @Success 200 {object} dto.Response "Successfully get loan data"
+// @Failure 400 {object} dto.Response "Incorrect client input"
+// @Failure 500 {object} dto.Response "Internal server error"
+// @Router /admin/loan/dont [get]
 func (ah *AdminHandler) GetLDDont(c *gin.Context) {
 	var ctx = c.Request.Context()
 	page, err := getPage(c)
@@ -116,6 +146,17 @@ func (ah *AdminHandler) GetLDDont(c *gin.Context) {
 	})
 }
 
+// AddCategory godoc
+// @Summary Add category
+// @Description Add new category to database
+// @Accept json
+// @Produce json
+// @Param category body dto.Category true "Category name"
+// @Tags Admin
+// @Success 200 {object} dto.Response "Successfully add new category"
+// @Failure 400 {object} dto.Response "Incorrect client input"
+// @Failure 500 {object} dto.Response "Internal server error"
+// @Router /admin/add/category [post]
 func (ah *AdminHandler) AddCategory(c *gin.Context) {
 	var (
 		data dto.Category
@@ -140,6 +181,17 @@ func (ah *AdminHandler) AddCategory(c *gin.Context) {
 	})
 }
 
+// AddBook godoc
+// @Summary Add book
+// @Description Add new book to database
+// @Accept json
+// @Produce json
+// @Param book body dto.BookData true "Book data"
+// @Tags Admin
+// @Success 200 {object} dto.Response "Successfully add new book"
+// @Failure 400 {object} dto.Response "Incorrect client input"
+// @Failure 500 {object} dto.Response "Internal server error"
+// @Router /admin/add/book [post]
 func (ah *AdminHandler) AddBook(c *gin.Context) {
 	var (
 		data dto.BookData
@@ -163,6 +215,17 @@ func (ah *AdminHandler) AddBook(c *gin.Context) {
 	})
 }
 
+// Confirm godoc
+// @Summary Confirm
+// @Description Confirm book loan
+// @Accept json
+// @Produce json
+// @Param confirm body dto.Confirm true "Student and book data"
+// @Tags Admin
+// @Success 200 {object} dto.Response "Successfully confirm book loan"
+// @Failure 400 {object} dto.Response "Incorrect client input"
+// @Failure 500 {object} dto.Response "Internal server error"
+// @Router /admin/loan/confirm [post]
 func (ah *AdminHandler) Confirm(c *gin.Context) {
 	var (
 		data dto.Confirm
